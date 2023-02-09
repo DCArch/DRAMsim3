@@ -26,7 +26,7 @@ add_library(json INTERFACE)
 target_include_directories(json INTERFACE ext/headers)
 
 # Main DRAMSim Lib
-add_library(dramsim3 SHARED
+add_library(dramsim3 STATIC
     src/bankstate.cc
     src/channel_state.cc
     src/command_queue.cc
@@ -40,6 +40,23 @@ add_library(dramsim3 SHARED
     src/timing.cc
     src/memory_system.cc
 )
+install(TARGETS dramsim3
+        LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
+install(FILES
+        src/dramsim3.h
+        src/bankstate.h
+        src/channel_state.h
+        src/command_queue.h
+        src/common.h
+        src/configuration.h
+        src/controller.h
+        src/dram_system.h
+        src/hmc.h
+        src/refresh.h
+        src/simple_stats.h
+        src/timing.h
+        src/memory_system.h
+        DESTINATION ${CMAKE_INSTALL_PREFIX}/include/DRAMsim3)
 
 if (THERMAL)
     # dependency check
