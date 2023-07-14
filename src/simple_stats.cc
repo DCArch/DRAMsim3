@@ -1,6 +1,7 @@
 #include <iostream>
 
-#include "fmt/format.h"
+#include "nlohmann/json.hpp"
+#include "spdlog/logger.h"
 #include "simple_stats.h"
 
 namespace dramsim3 {

@@ -1,5 +1,22 @@
 cmake_minimum_required(VERSION 3.0.0)
 project(dramsim3)
+set(CMAKE_CXX_STANDARD 20)
+
+include(ExternalProject)
+set(EXTERNAL_INSTALL_LOCATION ${CMAKE_BINARY_DIR}/external)
+ExternalProject_Add(
+    nlohmann_json
+    GIT_REPOSITORY https://github.com/nlohmann/json
+    GIT_TAG v3.9.1
+    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} -DJSON_MultipleHeaders=ON -DJSON_BuildTests=Off
+)
+# Guarantees same version of fmt is used for both dramsim3 and DCSim
+ExternalProject_Add(
+    spdlog
+    GIT_REPOSITORY https://github.com/gabime/spdlog
+    GIT_TAG v1.9.0
+    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}
+)
 
 set(default_build_type "Release")
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
@@ -14,16 +31,9 @@ endif()
 add_library(inih INTERFACE)
 target_include_directories(inih INTERFACE ext/headers)
 
-add_library(format INTERFACE)
-target_include_directories(format INTERFACE ext/fmt/include)
-target_compile_definitions(format INTERFACE FMT_HEADER_ONLY=1)
-
 # argparsing library, only used in main program not the library
 add_library(args INTERFACE)
 target_include_directories(args INTERFACE ext/headers)
-
-add_library(json INTERFACE)
-target_include_directories(json INTERFACE ext/headers)
 
 # Main DRAMSim Lib
 add_library(dramsim3 STATIC
@@ -92,10 +102,11 @@ if (ADDR_TRACE)
     target_compile_options(dramsim3 PRIVATE -DADDR_TRACE)
 endif (ADDR_TRACE)
 
-
+add_dependencies(dramsim3 nlohmann_json fmt spdlog)
+target_include_directories(dramsim3 PUBLIC ${EXTERNAL_INSTALL_LOCATION}/include)
 target_include_directories(dramsim3 INTERFACE src)
 target_compile_options(dramsim3 PRIVATE -Wall)
-target_link_libraries(dramsim3 PRIVATE inih format)
+target_link_libraries(dramsim3 PRIVATE inih)
 set_target_properties(dramsim3 PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}
     CXX_STANDARD 11
