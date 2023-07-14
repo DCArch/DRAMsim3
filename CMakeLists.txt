@@ -105,7 +105,7 @@ endif (ADDR_TRACE)
 add_dependencies(dramsim3 nlohmann_json spdlog)
 target_include_directories(dramsim3 PUBLIC ${EXTERNAL_INSTALL_LOCATION}/include)
 target_include_directories(dramsim3 INTERFACE src)
-target_compile_options(dramsim3 PRIVATE -Wall)
+target_compile_options(dramsim3 PRIVATE -Wall -fPIC)
 target_link_libraries(dramsim3 PRIVATE inih)
 set_target_properties(dramsim3 PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}
