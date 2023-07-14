@@ -102,7 +102,7 @@ if (ADDR_TRACE)
     target_compile_options(dramsim3 PRIVATE -DADDR_TRACE)
 endif (ADDR_TRACE)
 
-add_dependencies(dramsim3 nlohmann_json fmt spdlog)
+add_dependencies(dramsim3 nlohmann_json spdlog)
 target_include_directories(dramsim3 PUBLIC ${EXTERNAL_INSTALL_LOCATION}/include)
 target_include_directories(dramsim3 INTERFACE src)
 target_compile_options(dramsim3 PRIVATE -Wall)
