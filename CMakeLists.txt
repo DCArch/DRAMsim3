@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.0.0)
 project(dramsim3)
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 17)
 
 include(ExternalProject)
 set(EXTERNAL_INSTALL_LOCATION ${CMAKE_BINARY_DIR}/external)
@@ -10,12 +10,11 @@ ExternalProject_Add(
     GIT_TAG v3.9.1
     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} -DJSON_MultipleHeaders=ON -DJSON_BuildTests=Off
 )
-# Guarantees same version of fmt is used for both dramsim3 and DCSim
 ExternalProject_Add(
-    spdlog
-    GIT_REPOSITORY https://github.com/gabime/spdlog
-    GIT_TAG v1.9.0
-    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}
+        fmt
+        GIT_REPOSITORY https://github.com/fmtlib/fmt
+        GIT_TAG 10.2.1
+        CMAKE_ARGS -DCMAKE_POSITION_INDEPENDENT_CODE=TRUE -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}
 )
 
 set(default_build_type "Release")
@@ -102,10 +101,10 @@ if (ADDR_TRACE)
     target_compile_options(dramsim3 PRIVATE -DADDR_TRACE)
 endif (ADDR_TRACE)
 
-add_dependencies(dramsim3 nlohmann_json spdlog)
+add_dependencies(dramsim3 nlohmann_json fmt)
 target_include_directories(dramsim3 PUBLIC ${EXTERNAL_INSTALL_LOCATION}/include)
 target_include_directories(dramsim3 INTERFACE src)
-target_compile_options(dramsim3 PRIVATE -Wall -fPIC)
+target_compile_options(dramsim3 PRIVATE -Wall -fPIC -DFMT_HEADER_ONLY=1 -fabi-version=2 -D_GLIBCXX_USE_CXX11_ABI=0)
 target_link_libraries(dramsim3 PRIVATE inih)
 set_target_properties(dramsim3 PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}
@@ -117,7 +116,7 @@ set_target_properties(dramsim3 PROPERTIES
 # trace CPU, .etc
 add_executable(dramsim3main src/main.cc src/cpu.cc)
 target_link_libraries(dramsim3main PRIVATE dramsim3 args)
-target_compile_options(dramsim3main PRIVATE)
+target_compile_options(dramsim3main PRIVATE -fabi-version=2 -D_GLIBCXX_USE_CXX11_ABI=0)
 set_target_properties(dramsim3main PROPERTIES
     CXX_STANDARD 11
     CXX_STANDARD_REQUIRED YES

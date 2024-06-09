@@ -1,6 +1,6 @@
 #include "common.h"
 #include "nlohmann/json.hpp"
-#include "spdlog/logger.h"
+#include "fmt/format.h"
 #include <sstream>
 #include <unordered_set>
 #include <sys/stat.h>
